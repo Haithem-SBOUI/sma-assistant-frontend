@@ -32,7 +32,7 @@ export interface HealthResponse {
   providedIn: 'root'
 })
 export class SmaApiService {
-  private readonly baseUrl = 'http://localhost:8000/api';
+  private readonly baseUrl = '/api';
   private readonly requestTimeout = 3000000; // 30 seconds
 
   // Connection status
