@@ -16,11 +16,11 @@ COPY . .
 # Build the application
 RUN npm run build -- --base-href=/
 
-# Install a simple HTTP server
-RUN npm install -g http-server
+# Install serve - a better static file server
+RUN npm install -g serve
 
 # Expose port
 EXPOSE 4200
 
 # Start the application
-CMD ["http-server", "dist/sma-assistant-frontend", "-p", "4200", "-a", "0.0.0.0"]
+CMD ["serve", "-s", "dist/sma-assistant-frontend", "-l", "4200"]
