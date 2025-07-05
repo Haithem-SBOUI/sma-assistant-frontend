@@ -1,0 +1,142 @@
+<div class="chat-container">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <i class="pi pi-heart"></i>
+          SMA Medical Assistant
+        </h1>
+        <p class="header-subtitle">Your trusted companion for Spinal Muscular Atrophy information</p>
+      </div>
+      <div class="header-actions">
+        <div class="connection-status" [ngClass]="{'connected': isConnected, 'disconnected': !isConnected}">
+          <i class="pi" [ngClass]="isConnected ? 'pi-check-circle' : 'pi-times-circle'"></i>
+          <span>{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+        </div>
+        <button 
+          pButton 
+          type="button" 
+          icon="pi pi-refresh" 
+          class="p-button-outlined p-button-secondary p-button-sm"
+          (click)="retryConnection()"
+          [disabled]="isConnected"
+          title="Retry Connection">
+        </button>
+        <button 
+          pButton 
+          type="button" 
+          icon="pi pi-trash" 
+          class="p-button-outlined p-button-danger p-button-sm"
+          (click)="clearChat()"
+          title="Clear Chat">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggested Questions (shown when no messages or few messages) -->
+  <div class="suggested-questions" *ngIf="messages.length <= 1">
+    <h3>Popular Questions:</h3>
+    <div class="suggestions-grid">
+      <p-chip 
+        *ngFor="let question of suggestedQuestions" 
+        [label]="question"
+        (click)="sendSuggestedQuestion(question)"
+        class="suggestion-chip">
+      </p-chip>
+    </div>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="messages-container" #messagesContainer>
+    <div class="messages-list">
+      <div 
+        *ngFor="let message of messages; trackBy: trackByMessageId" 
+        class="message-wrapper"
+        [ngClass]="{'user-message': message.isUser, 'assistant-message': !message.isUser}"
+        [@fadeIn]>
+        
+        <!-- User Message -->
+        <div *ngIf="message.isUser" class="message user-msg">
+          <div class="message-content">
+            <div class="message-text">{{ message.message }}</div>
+            <div class="message-meta">
+              <span class="message-time">{{ formatTimestamp(message.timestamp) }}</span>
+            </div>
+          </div>
+          <div class="message-avatar user-avatar">
+            <i class="pi pi-user"></i>
+          </div>
+        </div>
+
+        <!-- Assistant Message -->
+        <div *ngIf="!message.isUser" class="message assistant-msg">
+          <div class="message-avatar assistant-avatar">
+            <i class="pi pi-android" *ngIf="!message.isLoading"></i>
+            <p-progressSpinner 
+              *ngIf="message.isLoading"
+              strokeWidth="3" 
+              animationDuration="1s"
+              styleClass="loading-spinner">
+            </p-progressSpinner>
+          </div>
+          <div class="message-content">
+            <div class="message-text" [ngClass]="{'loading-text': message.isLoading}">
+              <span *ngIf="!message.isLoading">{{ message.message }}</span>
+              <span *ngIf="message.isLoading" class="loading-dots">{{ message.message }}</span>
+            </div>
+            <div class="message-meta" *ngIf="!message.isLoading">
+              <span class="message-time">{{ formatTimestamp(message.timestamp) }}</span>
+              <div 
+                *ngIf="message.confidence !== undefined" 
+                class="confidence-badge"
+                [ngClass]="getConfidenceBadgeClass(message.confidence)"
+                [title]="'Confidence: ' + formatConfidence(message.confidence)">
+                <i class="pi pi-info-circle"></i>
+                <span>{{ formatConfidence(message.confidence) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    <div class="input-container">
+      <div class="input-wrapper">
+        <input 
+          #messageInput
+          type="text" 
+          pInputText 
+          [(ngModel)]="currentMessage"
+          (keypress)="onKeyPress($event)"
+          placeholder="Ask me anything about Spinal Muscular Atrophy..."
+          [disabled]="isLoading"
+          class="message-input"
+          maxlength="2000">
+        <button 
+          pButton 
+          type="button" 
+          icon="pi pi-send" 
+          class="send-button"
+          (click)="sendMessage()"
+          [disabled]="isLoading || !currentMessage.trim() || !isConnected"
+          [loading]="isLoading">
+        </button>
+      </div>
+      <div class="input-footer">
+        <span class="char-counter">{{ currentMessage.length }}/2000</span>
+        <span class="disclaimer">
+          <i class="pi pi-info-circle"></i>
+          Always consult healthcare professionals for medical advice
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Messages -->
+<p-toast position="top-right"></p-toast>
