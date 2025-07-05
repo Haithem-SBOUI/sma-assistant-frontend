@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build -- --base-href=/
 
 # Install a simple HTTP server
 RUN npm install -g http-server
