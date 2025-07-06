@@ -37,7 +37,7 @@ jobs:
           docker rm sma-assistant-frontend || true
           docker run -d \
             --name sma-assistant-frontend \
-            -p 8080:80 \
+            -p 4200:4200 \
             haithemsboui/sma-assistant-frontend:latest
 
           for i in {1..10}; do
