@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
-
 // Interfaces
 export interface ChatMessage {
   id: string;
@@ -32,8 +31,9 @@ export interface HealthResponse {
   providedIn: 'root'
 })
 export class SmaApiService {
-  private readonly baseUrl = '/api';
-  private readonly requestTimeout = 3000000; // 30 seconds
+  private readonly baseUrl = (window as any).env?.apiUrl;
+
+  private readonly requestTimeout = 3000000;
 
   // Connection status
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
