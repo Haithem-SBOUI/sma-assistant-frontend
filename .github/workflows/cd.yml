@@ -39,6 +39,7 @@ jobs:
             --name sma-assistant-frontend \
             -p 4200:4200 \
             -e API_URL=sma-assistant-backend \
+            --network sma-assistant \
             haithemsboui/sma-assistant-frontend:latest
 
           for i in {1..10}; do
